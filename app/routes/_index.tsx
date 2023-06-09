@@ -14,10 +14,10 @@ export default function Index() {
 
     return (
         <div className="flex flex-col w-full">
-            <div className="grid h-20 p-4 prose">
-                <h2>bambi</h2>
+            <div className="grid h-20 p-4">
+                <div className="font-bold text-2xl mb-2">bambi</div>
                 <p>A place to hold the passwords you hold deerly safe.</p>
-                <div className="divider mt-0 mb-2"></div>
+                <div className="divider"></div>
                 <div className="flex flex-row">
                     {!user?.active ? (
                         <Link className="link text-accent mr-2" to="/auth/login">

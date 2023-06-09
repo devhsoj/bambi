@@ -1,5 +1,5 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction} from '@remix-run/node';
-import { redirect} from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Response } from '@remix-run/node';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
@@ -55,14 +55,14 @@ export default function Login() {
     return (
         <div className="flex h-screen bg-base-200">
             <Form className="card p-8 min-w-fit w-1/3 min-h-fit h-1/2 bg-base-300 m-auto" method="POST">
-                <div className="card-body prose">
-                    <h2 className="mb-2 mt-0">
+                <div className="card-body">
+                    <div className="text-xl">
                         <Link to="/">
-                            <span className="text-lg font-bold">bambi</span>
+                            <span className="text-md font-bold">bambi</span>
                         </Link>
                         &nbsp;| Login
-                    </h2>
-                    <div className="divider mt-0 mb-0"></div>
+                    </div>
+                    <div className="divider"></div>
                     <div className="form-control">
                         <label className="label">
                             <span className="label-text">Email</span>
