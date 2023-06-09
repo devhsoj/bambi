@@ -3,7 +3,8 @@ import type { User } from '../types/user';
 import { randomBytes } from 'crypto';
 
 type Session = {
-    user: User
+    user: User,
+    lastVisitedUrl: string
 }
 
 export const { getSession, commitSession, destroySession } = createCookieSessionStorage<Session>({

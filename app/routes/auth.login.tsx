@@ -1,8 +1,8 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction} from '@remix-run/node';
-import { json} from '@remix-run/node';
+import { redirect} from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { Response} from '@remix-run/node';
-import { redirect } from '@remix-run/node';
-import { Form, useActionData, useNavigation } from '@remix-run/react';
+import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { commitSession, getSession } from '../lib/session.server';
 import { login } from '../lib/user/login.server';
 import type { ApiResponse } from '../types/response';
@@ -17,7 +17,7 @@ export const meta: V2_MetaFunction = () => {
 export async function loader({ request }: LoaderArgs) {
     const session = await getSession(request.headers.get('Cookie'));
 
-    if (session.get('user')) return redirect('/');
+    if (session.get('user')) return redirect('/dashboard');
 
     return null;
 }
@@ -37,9 +37,11 @@ export async function action({ request }: ActionArgs) {
 
     session.set('user', result.data!);
 
+    const lastVisitedUrl = session.get('lastVisitedUrl');
+
     return new Response(null, {
         headers: {
-            'X-Remix-Redirect': '/',
+            'X-Remix-Redirect': lastVisitedUrl ? lastVisitedUrl.toString() : '/dashboard',
             'Set-Cookie': await commitSession(session)
         }
     });
@@ -53,7 +55,12 @@ export default function Login() {
         <div className="flex h-screen bg-base-200">
             <Form className="card p-8 min-w-fit w-1/3 min-h-fit h-1/2 bg-base-300 m-auto" method="POST">
                 <div className="card-body prose">
-                    <h2 className="mb-2 mt-0">Login</h2>
+                    <h2 className="mb-2 mt-0">
+                        <Link to="/">
+                            <span className="text-lg font-bold">bambi</span>
+                        </Link>
+                        &nbsp;| Login
+                    </h2>
                     <div className="divider mt-0 mb-0"></div>
                     <div className="form-control">
                         <label className="label">

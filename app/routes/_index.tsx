@@ -24,17 +24,9 @@ export default function Index() {
                             Login
                         </Link>
                     ) : (
-                        <>
-                            <Link className="link text-accent mr-2" to="passwords">
-                                Passwords
-                            </Link>
-                            <Link className="link text-accent mr-2" to="account">
-                                Account
-                            </Link>
-                            <Link className="link text-accent mr-2" to="/dashboard/logout">
-                                Logout
-                            </Link>
-                        </>
+                        <Link className="link text-accent mr-2" to="/dashboard">
+                            Dashboard
+                        </Link>
                     )}
                 </div>
             </div>

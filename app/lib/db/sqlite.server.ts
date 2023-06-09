@@ -13,4 +13,7 @@ if (!sqliteFileExists) {
     db.exec(schema);
 }
 
-process.on('exit', () => db.close());
+const listener = () => db.close();
+
+process.removeListener('exit', listener);
+process.on('exit', listener);

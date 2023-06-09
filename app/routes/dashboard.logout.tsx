@@ -8,7 +8,7 @@ export async function loader({ request }: LoaderArgs) {
 
     return new Response(null, {
         headers: {
-            'X-Remix-Redirect': '/login',
+            'X-Remix-Redirect': '/auth/login',
             'Set-Cookie': await commitSession(session)
         }
     });
