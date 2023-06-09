@@ -20,19 +20,27 @@ function encryptKey(data, password) {
 
 (() => {
     const db = new Database(resolve(__dirname, '../', 'build/', 'bambi.db'));
-    const [ username, password ] = process.argv.slice(2);
+    const [
+        username,
+        password,
+        bcryptRounds
+    ] = process.argv.slice(2);
 
     if (!username || !password) {
-
-        console.error('usage: node scripts/add-user.js [username] [password]');
+        console.error('usage: node scripts/add-user.js [username] [password] [optional: bcrypt rounds (default: 14)]');
         process.exit(1);
+    }
 
+    const exists = db.prepare('SELECT username FROM users WHERE username = ?').get([ username ]) !== undefined;
+
+    if (exists) {
+        console.log(`'${username}' already exists!`);
+        process.exit(1);
     }
 
     db.prepare('INSERT INTO users (username, password, key) VALUES (?, ?, ?)').run([
         username,
-        hashSync(password, 14),
+        hashSync(password, bcryptRounds ? parseInt(bcryptRounds) : 14),
         encryptKey(randomBytes(64), password)
     ]);
-
 })();

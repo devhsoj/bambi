@@ -1,21 +1,27 @@
 import { compare } from 'bcrypt';
-import { db } from '../db/index.server';
+import { db } from '../db/sqlite.server';
 import type { User, UserRow } from '~/app/types/user';
 import type { ApiResponse } from '~/app/types/response';
 import { decrypt } from '../encryption/decrypt.server';
+import { UserCredentials } from '~/app/types/validation/user';
 
 const findUserByUsername = db.prepare('SELECT * FROM users WHERE username = ? LIMIT 1');
 
 export async function login(username: FormDataEntryValue | null, password: FormDataEntryValue | null): Promise<ApiResponse<User>> {
-    if (!username || !password) {
+    const { data, problems } = UserCredentials({
+        username,
+        password
+    });
+
+    if (problems) {
         return {
             success: false,
             status: 401,
-            message: 'Invalid Form Submission'
+            message: problems.summary
         };
     }
 
-    const user = findUserByUsername.get([ username.toString() ]) as UserRow;
+    const user = findUserByUsername.get([ data.username ]) as UserRow;
 
     if (!user) {
         return {
@@ -25,7 +31,7 @@ export async function login(username: FormDataEntryValue | null, password: FormD
         };
     }
 
-    const success = await compare(password.toString(), user.password);
+    const success = await compare(data.password, user.password);
 
     return {
         success,
@@ -34,8 +40,8 @@ export async function login(username: FormDataEntryValue | null, password: FormD
         data: success ? {
             active: true,
             data: {
-                username: username.toString(),
-                key: decrypt(user.key, password.toString()).toString('hex')
+                username: data.username,
+                key: decrypt(user.key, data.password).toString('hex')
             }
         } : undefined
     };

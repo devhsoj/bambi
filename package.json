@@ -14,6 +14,7 @@
     "@remix-run/node": "^1.17.0",
     "@remix-run/react": "^1.17.0",
     "@remix-run/serve": "^1.17.0",
+    "arktype": "^1.0.14-alpha",
     "bcrypt": "^5.1.0",
     "better-sqlite3": "^8.4.0",
     "isbot": "^3.6.8",
