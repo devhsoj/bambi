@@ -1,4 +1,4 @@
-import type { LinksFunction } from '@remix-run/node';
+import type { LinksFunction, LoaderArgs } from '@remix-run/node';
 import {
     Links,
     LiveReload,
@@ -6,15 +6,27 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
+    useLoaderData,
 } from '@remix-run/react';
 
 import styles from '@/styles/app.css';
+import { getSession } from './lib/session.server';
 
 export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: styles }
 ];
 
+export async function loader({ request }: LoaderArgs) {
+
+    const session = await getSession(request.headers.get('Cookie'));
+
+    return session.get('user') ?? null;
+
+}
+
 export default function App() {
+    const user = useLoaderData<typeof loader>();
+
     return (
         <html lang="en">
             <head>
@@ -24,7 +36,7 @@ export default function App() {
                 <Links />
             </head>
             <body>
-                <Outlet />
+                <Outlet context={user} />
                 <ScrollRestoration />
                 <Scripts />
                 {process.env.NODE_ENV !== 'production' && <LiveReload />}

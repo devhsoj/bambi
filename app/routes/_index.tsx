@@ -1,5 +1,6 @@
+import { Link, useOutletContext } from '@remix-run/react';
 import type { V2_MetaFunction } from '@remix-run/node';
-import { Link } from '@remix-run/react';
+import type { User } from '../types/user';
 
 export const meta: V2_MetaFunction = () => {
     return [
@@ -9,6 +10,8 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Index() {
+    const user = useOutletContext<User | null>();
+
     return (
         <div className="flex flex-col w-full">
             <div className="grid h-20 p-4 prose">
@@ -16,9 +19,23 @@ export default function Index() {
                 <p>A place to hold the passwords you hold deerly safe.</p>
                 <div className="divider mt-0 mb-2"></div>
                 <div className="flex flex-row">
-                    <Link className="link text-accent mr-2" to="login">
-                        Login
-                    </Link>
+                    {!user?.active ? (
+                        <Link className="link text-accent mr-2" to="/auth/login">
+                            Login
+                        </Link>
+                    ) : (
+                        <>
+                            <Link className="link text-accent mr-2" to="passwords">
+                                Passwords
+                            </Link>
+                            <Link className="link text-accent mr-2" to="account">
+                                Account
+                            </Link>
+                            <Link className="link text-accent mr-2" to="/dashboard/logout">
+                                Logout
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
