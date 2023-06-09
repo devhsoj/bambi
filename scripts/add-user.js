@@ -31,7 +31,7 @@ function encryptKey(data, password) {
         process.exit(1);
     }
 
-    const exists = db.prepare('SELECT username FROM users WHERE username = ?').get([ username ]) !== undefined;
+    const exists = db.prepare('SELECT 1 FROM users WHERE username = ?').get([ username ]) !== undefined;
 
     if (exists) {
         console.log(`'${username}' already exists!`);
