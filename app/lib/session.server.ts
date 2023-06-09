@@ -15,6 +15,6 @@ export const { getSession, commitSession, destroySession } = createCookieSession
         ],
         sameSite: 'lax',
         maxAge: 60 * 60, // 1 hr
-        secure: true
+        secure: process.env.NODE_ENV === 'production'
     }
 });

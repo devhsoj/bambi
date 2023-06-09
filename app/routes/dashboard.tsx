@@ -1,6 +1,6 @@
 import { commitSession, getSession } from '../lib/session.server';
 import type { LoaderArgs} from '@remix-run/node';
-import { redirect} from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Outlet, useOutletContext } from '@remix-run/react';
 import type { User } from '../types/user';
 import Dashboard from '../components/Dashboard';

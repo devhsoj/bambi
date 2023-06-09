@@ -46,14 +46,20 @@ export default function Sidebar({ children }: { children?: ReactNode | ReactNode
             {/* Small Screen Display */}
             <div className="drawer-side">
                 <label className="drawer-overlay" htmlFor="sidebar-toggle"></label>
-                <ul className="menu p-4 w-80 h-full bg-base-200">
+                <ul className="menu p-4 w-60 h-full bg-base-200">
                     <Link to="/">
                         <span className="text-lg font-bold">bambi</span>
                     </Link>
                     <div className="divider"></div>
                     {navbarLinks.map(link => (
                         <li key={link.href}>
-                            <Link to={link.href}>
+                            <Link to={link.href} onClick={() => {
+                                setTimeout(() => {
+                                    const toggle = document.getElementById('sidebar-toggle') as HTMLInputElement;
+
+                                    toggle.checked = !toggle.checked;
+                                }, 125);
+                            }}>
                                 {link.text}
                             </Link>
                         </li>

@@ -1,7 +1,7 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction} from '@remix-run/node';
 import { redirect} from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Response} from '@remix-run/node';
+import { Response } from '@remix-run/node';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 import { commitSession, getSession } from '../lib/session.server';
 import { login } from '../lib/user/login.server';
@@ -40,6 +40,7 @@ export async function action({ request }: ActionArgs) {
     const lastVisitedUrl = session.get('lastVisitedUrl');
 
     return new Response(null, {
+        status: 200,
         headers: {
             'X-Remix-Redirect': lastVisitedUrl ? lastVisitedUrl.toString() : '/dashboard',
             'Set-Cookie': await commitSession(session)
