@@ -29,7 +29,7 @@ docker build . --build-arg USERNAME=joe --build-arg PASSWORD=m4ma --build-arg SE
 
 ## Running
 
-**IMPORTANT:** bambi **should** be served behind a **HTTPS** reverse proxy like [nginx](https://www.nginx.com/). Unless you're a network god or you're not scared of your traffic being sniffed!
+**IMPORTANT:** bambi **should** be served behind a **HTTPS** reverse proxy like [nginx](https://www.nginx.com/). Unless you're a networking god or you're not scared of your **HTTP** traffic being sniffed!
 
 **Without Docker:**
 ```bash
@@ -38,5 +38,5 @@ npm start # running at http://0.0.0.0:3000
 
 **With Docker:**
 ```bash
-docker run -d -p 3000:3000 bambi # running on http://0.0.0.0:3000
+docker run -d -p 3000:3000 bambi # running at http://0.0.0.0:3000
 ```
