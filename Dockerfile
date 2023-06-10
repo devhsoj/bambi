@@ -13,7 +13,7 @@ FROM node:18-alpine
 WORKDIR /opt/bambi
 
 COPY --from=BUILD_IMAGE /opt/bambi-build/node_modules node_modules/
-COPY --from=BUILD_IMAGE /opt/bambi-build/package*.json .
+COPY --from=BUILD_IMAGE /opt/bambi-build/package*.json ./
 COPY --from=BUILD_IMAGE /opt/bambi-build/public public/
 COPY --from=BUILD_IMAGE /opt/bambi-build/build build/
 COPY --from=BUILD_IMAGE /opt/bambi-build/app/lib/db/sql/ app/lib/db/sql/
