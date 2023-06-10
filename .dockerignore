@@ -1,0 +1,8 @@
+node_modules/
+public/build/
+.gitignore
+.vscode/
+.cache/
+build/
+.git/
+.env

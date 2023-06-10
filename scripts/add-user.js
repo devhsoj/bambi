@@ -2,6 +2,7 @@ const { randomBytes, createCipheriv, pbkdf2Sync } = require('crypto');
 const Database = require('better-sqlite3');
 const { hashSync } = require('bcrypt');
 const { resolve } = require('path');
+const { readFileSync, existsSync } = require('fs');
 
 function encryptKey(data, key) {
     const iv = randomBytes(32);
@@ -21,7 +22,16 @@ function encryptKey(data, key) {
 }
 
 (() => {
-    const db = new Database(resolve(__dirname, '../', 'build/', 'bambi.db'));
+    const sqliteFilepath = resolve(__dirname, '../', 'build/', 'bambi.db');
+    const sqliteFileExists = existsSync(sqliteFilepath);
+    const db = new Database(sqliteFilepath);
+
+    if (!sqliteFileExists) {
+        const schema = readFileSync(resolve(__dirname, '../', 'app/', 'lib/', 'db/', 'sql/', 'schema.sql')).toString();
+
+        db.exec(schema);
+    }
+
     const [
         username,
         password,
@@ -45,4 +55,6 @@ function encryptKey(data, key) {
         hashSync(password, bcryptRounds ? parseInt(bcryptRounds) : 14),
         encryptKey(randomBytes(256), password)
     ]);
+
+    db.close();
 })();
