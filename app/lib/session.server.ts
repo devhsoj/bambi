@@ -1,5 +1,5 @@
 import { createCookieSessionStorage } from '@remix-run/node';
-import type { User } from '../types/user';
+import type { User } from '@/types/user';
 import { randomBytes } from 'crypto';
 
 type Session = {

@@ -17,11 +17,20 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderArgs) {
-
     const session = await getSession(request.headers.get('Cookie'));
+    const user = session.get('user');
 
-    return session.get('user') ?? null;
+    if (!user) return null;
 
+    const safeUserData = {
+        active: user.active,
+        data: {
+            id: user.data.id,
+            username: user.data.username,
+        }
+    };
+
+    return safeUserData;
 }
 
 export default function App() {

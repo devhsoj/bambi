@@ -3,15 +3,17 @@ const Database = require('better-sqlite3');
 const { hashSync } = require('bcrypt');
 const { resolve } = require('path');
 
-function encryptKey(data, password) {
+function encryptKey(data, key) {
     const iv = randomBytes(32);
-    const derivedKey = pbkdf2Sync(password, iv, 200_000, 32, 'sha512');
+    const salt = randomBytes(32);
+
+    const derivedKey = pbkdf2Sync(key, salt, process.env.PBKDF2_USER_KEY_ITERATIONS ? parseInt(process.env.PBKDF2_USER_KEY_ITERATIONS) : 250_000, 32, 'sha512');
     const cipher = createCipheriv('aes-256-gcm', derivedKey, iv);
 
     const encrypted = Buffer.concat([
-        cipher.update(Buffer.from(data, 'utf-8')),
+        cipher.update(typeof data === 'string' ? Buffer.from(data, 'utf-8') : data),
         cipher.final()
-    ]).toString('hex') + '$' + iv.toString('hex');
+    ]).toString('hex') + '$' + iv.toString('hex') + '$' + salt.toString('hex');
 
     const authTag = cipher.getAuthTag().toString('hex');
 
@@ -41,6 +43,6 @@ function encryptKey(data, password) {
     db.prepare('INSERT INTO users (username, password, key) VALUES (?, ?, ?)').run([
         username,
         hashSync(password, bcryptRounds ? parseInt(bcryptRounds) : 14),
-        encryptKey(randomBytes(64), password)
+        encryptKey(randomBytes(256), password)
     ]);
 })();

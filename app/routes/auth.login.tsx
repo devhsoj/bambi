@@ -1,12 +1,11 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction} from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Response } from '@remix-run/node';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { commitSession, getSession } from '../lib/session.server';
-import { login } from '../lib/user/login.server';
-import type { ApiResponse } from '../types/response';
-import ServerResponse from '../components/ServerResponse';
+import { commitSession, getSession } from '@/lib/session.server';
+import { login } from '@/lib/user/login.server';
+import type { ApiResponse } from '@/types/response';
+import ServerResponse from '@/components/ServerResponse';
 
 export const meta: V2_MetaFunction = () => {
     return [
@@ -26,10 +25,7 @@ export async function action({ request }: ActionArgs) {
     const session = await getSession(request.headers.get('Cookie'));
     const body = await request.formData();
 
-    const username = body.get('username');
-    const password = body.get('password');
-
-    const result = await login(username, password);
+    const result = await login(body.get('username'), body.get('password'));
 
     if (!result.success) {
         return json(result, { status: result.status });
@@ -39,10 +35,9 @@ export async function action({ request }: ActionArgs) {
 
     const lastVisitedUrl = session.get('lastVisitedUrl');
 
-    return new Response(null, {
+    return redirect(lastVisitedUrl ? lastVisitedUrl.toString() : '/dashboard', {
         status: 200,
         headers: {
-            'X-Remix-Redirect': lastVisitedUrl ? lastVisitedUrl.toString() : '/dashboard',
             'Set-Cookie': await commitSession(session)
         }
     });
@@ -65,7 +60,7 @@ export default function Login() {
                     <div className="divider"></div>
                     <div className="form-control">
                         <label className="label">
-                            <span className="label-text">Email</span>
+                            <span className="label-text">Username</span>
                         </label>
                         <input
                             className="input input-bordered"

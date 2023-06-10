@@ -1,5 +1,5 @@
 import { Link, useOutletContext } from '@remix-run/react';
-import type { User } from '../types/user';
+import type { User } from '@/types/user';
 
 export default function Account() {
     const user = useOutletContext<User>();

@@ -1,6 +1,6 @@
 import { Link, useOutletContext } from '@remix-run/react';
 import type { V2_MetaFunction } from '@remix-run/node';
-import type { User } from '../types/user';
+import type { User } from '@/types/user';
 
 export const meta: V2_MetaFunction = () => {
     return [
