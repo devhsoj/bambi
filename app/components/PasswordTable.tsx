@@ -92,18 +92,24 @@ export default function PasswordTable({ items }: { items?: Password[] }) {
 
     return (
         <div className="overflow-x-scroll">
-            <div className="italic ml-4 mt-4">
-                <input
-                    className="bg-inherit rounded-none mr-2 border border-base-200 active:border-primary-focus p-1"
-                    placeholder="Search"
-                    onChange={(e) => {
-                        const search = e.target.value;
+            <div className={classes(items && items?.length > 0 ? 'ml-4 mt-4' : '')}>
+                {
+                    items && items?.length > 0 ? (
+                        <>
+                            <input
+                                className="bg-inherit rounded-none mr-2 border border-base-200 active:border-primary-focus p-1"
+                                placeholder="Search"
+                                onChange={(e) => {
+                                    const search = e.target.value;
 
-                        setVisibleItems(items?.filter((item) => item.name.includes(search) || item.username.includes(search)));
-                        setSearching(e.target.value.length > 0);
-                    }}
-                />
-                <span>{items && items?.length > 0 && `${items.length} total passwords ${searching ? `(${visibleItems?.length ?? 0} passwords filtered)` : ''}`}</span>
+                                    setVisibleItems(items?.filter((item) => item.name.includes(search) || item.username.includes(search)));
+                                    setSearching(e.target.value.length > 0);
+                                }}
+                            />
+                            <span>{items.length} total passwords <i>{searching ? `(${visibleItems?.length ?? 0} passwords filtered)` : ''}</i></span>
+                        </>
+                    ) : ''
+                }
             </div>
             <table className="table">
                 <thead>
