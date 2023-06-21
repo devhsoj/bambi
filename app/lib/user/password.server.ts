@@ -42,6 +42,42 @@ export async function create(user: User | undefined, passwordData: PasswordFormD
     };
 }
 
+const getPasswordsByUserById = db.prepare('SELECT id,data FROM passwords WHERE user_id = ? and id = ?');
+
+export async function get(user: User | undefined, id: Password['id']): Promise<ApiResponse<Password>> {
+    if (!user) {
+        return {
+            success: false,
+            status: 401,
+            message: 'Not Authenticated'
+        };
+    }
+
+    const item = getPasswordsByUserById.get([ user.data.id, id ]) as PasswordRow | undefined;
+    const key = Buffer.from(user.data.key, 'hex');
+
+    if (!item) {
+        return {
+            success: false,
+            status: 404,
+            message: 'Not Found'
+        };
+    }
+
+    const data = {
+        id: item.id,
+        ...JSON.parse(decryptSHA256Derivation(item.data, key).toString())
+    };
+
+    return {
+        success: true,
+        status: 200,
+        message: '',
+        data
+    };
+}
+
+
 const getPasswordsByUser = db.prepare('SELECT id,data FROM passwords WHERE user_id = ?');
 
 export async function list(user: User | undefined): Promise<ApiResponse<Password[]>> {
@@ -108,6 +144,33 @@ export async function removeAll(user: User | undefined): Promise<ApiResponse> {
     }
 
     deletePasswordsByUser.run([user.data.id]);
+
+    return {
+        success: true,
+        status: 200,
+        message: ''
+    };
+}
+
+const updatePasswordByUserById = db.prepare('UPDATE passwords SET data = ? WHERE user_id = ? AND id = ?');
+
+export async function update(user: User | undefined, id: Password['id'], data: Password): Promise<ApiResponse> {
+    if (!user) {
+        return {
+            success: false,
+            status: 401,
+            message: 'Not Authenticated'
+        };
+    }
+
+    const key = Buffer.from(user.data.key, 'hex');
+    const encryptedPasswordItemData = encryptSHA256Derivation(JSON.stringify(data), key);
+
+    updatePasswordByUserById.run([
+        encryptedPasswordItemData,
+        user.data.id,
+        id
+    ]);
 
     return {
         success: true,

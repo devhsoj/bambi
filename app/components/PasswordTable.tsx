@@ -1,15 +1,39 @@
+import { updatePassword } from '@/lib/frontend/password.client';
 import type { Password } from '@/types/password';
+import { classes } from '@/utils/styles';
 import { useState } from 'react';
 
-function HiddenColumn({ children }: { children: string }) {
+let changeTimeout: ReturnType<typeof setTimeout>;
+
+function PasswordColumn({ value, onChange }: { value: string, onChange?: (value: string) => void }) {
     const [ hidden, setHidden ] = useState(true);
+    const [ value_, setValue_ ] = useState(value);
 
     return (
         <td
             className="select-none hover:cursor-pointer w-4/12"
-            onClick={() => setHidden(!hidden)}
         >
-            {hidden ? '•'.repeat(16) : children}
+            <input
+                className={
+                    classes(
+                        'input w-32 min-w-32 max-w-32 h-full p-0 m-0 rounded-none',
+                        !hidden ? 'border border-primary-focus p-1' : ''
+                    )
+                }
+                value={hidden ? '•'.repeat(16) : value_}
+                onChange={e => {
+                    setValue_(e.target.value);
+
+                    if (!onChange) return;
+
+                    if (changeTimeout) clearTimeout(changeTimeout);
+
+                    changeTimeout = setTimeout(() => onChange(e.target.value), 350);
+                }}
+            />
+            <button className="btn btn-xs ml-2 hover:bg-warning-content" onClick={() => setHidden(!hidden)}>
+                Show
+            </button>
         </td>
     );
 }
@@ -22,7 +46,7 @@ function Operations({ item, removeItem }: { item: Password, removeItem: (passwor
         <td className="w-1/12">
             {/* Copy */}
             <button
-                className="btn-xs hover:font-bold hover:bg-secondary-content"
+                className="btn btn-xs hover:font-bold hover:bg-secondary-content mr-1"
                 onClick={async () => {
                     await navigator.clipboard.writeText(item.password);
                     setCopyText('Copied!');
@@ -34,7 +58,7 @@ function Operations({ item, removeItem }: { item: Password, removeItem: (passwor
             </button>
             {/* Remove */}
             <button
-                className="btn-xs hover:font-bold hover:bg-error hover:text-black"
+                className="btn btn-xs hover:font-bold hover:bg-error-content hover:text-black"
                 onClick={async () => {
                     setDeleting(true);
 
@@ -79,7 +103,13 @@ export default function PasswordTable({ items }: { items?: Password[] }) {
                             <tr key={item.id}>
                                 <td className="w-3/12">{item.name}</td>
                                 <td className="w-3/12">{item.username}</td>
-                                <HiddenColumn>{item.password}</HiddenColumn>
+                                <PasswordColumn
+                                    value={item.password}
+                                    onChange={(v) => updatePassword({
+                                        ...item,
+                                        password: v
+                                    })}
+                                />
                                 <Operations
                                     item={item}
                                     removeItem={(item) => {
