@@ -1,82 +1,88 @@
-import { updatePassword } from '@/lib/frontend/password.client';
+import { updatePassword, generatePassword } from '@/lib/frontend/password.client';
 import type { Password } from '@/types/password';
 import { classes } from '@/utils/styles';
 import { useState } from 'react';
 
-let changeTimeout: ReturnType<typeof setTimeout>;
-
-function PasswordColumn({ value, onChange }: { value: string, onChange?: (value: string) => void }) {
+function PasswordActionColumns({ item, onSave, removeItem }: {
+    item: Password,
+    onSave?: (value: string) => void,
+    removeItem: (password: Password) => void
+}) {
     const [ hidden, setHidden ] = useState(true);
-    const [ value_, setValue_ ] = useState(value);
+    const [ value_, setValue_ ] = useState(item.password);
 
-    return (
-        <td
-            className="select-none hover:cursor-pointer w-4/12"
-        >
-            <input
-                className={
-                    classes(
-                        'input w-32 min-w-32 max-w-32 h-full p-0 m-0 rounded-none',
-                        !hidden ? 'border border-primary-focus p-1' : ''
-                    )
-                }
-                value={hidden ? '•'.repeat(16) : value_}
-                onChange={e => {
-                    setValue_(e.target.value);
-
-                    if (!onChange) return;
-
-                    if (changeTimeout) clearTimeout(changeTimeout);
-
-                    changeTimeout = setTimeout(() => onChange(e.target.value), 350);
-                }}
-            />
-            <button className="btn btn-xs ml-2 hover:bg-warning-content" onClick={() => setHidden(!hidden)}>
-                Show
-            </button>
-        </td>
-    );
-}
-
-function Operations({ item, removeItem }: { item: Password, removeItem: (password: Password) => void }) {
     const [ copyText, setCopyText ] = useState('Copy');
     const [ deleting, setDeleting ] = useState(false);
 
     return (
-        <td className="w-1/12">
-            {/* Copy */}
-            <button
-                className="btn btn-xs hover:font-bold hover:bg-secondary-content mr-1"
-                onClick={async () => {
-                    await navigator.clipboard.writeText(item.password);
-                    setCopyText('Copied!');
-
-                    setTimeout(() => setCopyText('Copy'), 1_000);
-                }}
-            >
-                {copyText}
-            </button>
-            {/* Remove */}
-            <button
-                className="btn btn-xs hover:font-bold hover:bg-error-content hover:text-black"
-                onClick={async () => {
-                    setDeleting(true);
-
-                    const res = await fetch(`/dashboard/passwords/remove/${item.id}`, { method: 'DELETE' });
-
-                    if (res.status === 200) {
-                        setDeleting(false);
-                        removeItem(item);
+        <>
+            <td className="select-none hover:cursor-pointer w-3/12">
+                <input
+                    className={
+                        classes(
+                            'input h-full p-0 m-0 rounded-none disabled:bg-base-100 disabled:border-none',
+                            !hidden ? 'border border-primary-focus w-full min-w-full max-w-full' : 'w-32 min-w-32 max-w-32'
+                        )
                     }
-                }}
-            >
-                {
-                    deleting ? (
-                        <span className="loading loading-xs loading-spinner"></span>
-                    ) : 'Remove'
-                }
-            </button>
-        </td>
+                    style={{ borderWidth: 1 }}
+                    value={hidden ? '•'.repeat(16) : value_}
+                    onChange={e => setValue_(e.target.value)}
+                    disabled={hidden}
+                />
+            </td>
+            <td className="w-2/12 flex justify-start space-x-2">
+                <button
+                    className="btn btn-xs hover:font-bold hover:bg-secondary-content"
+                    onClick={async () => {
+                        await navigator.clipboard.writeText(value_);
+                        setCopyText('Copied!');
+
+                        setTimeout(() => setCopyText('Copy'), 1_000);
+                    }}
+                >
+                    {copyText}
+                </button>
+                <button className="btn btn-xs hover:bg-warning-content" onClick={() => setHidden(!hidden)}>
+                    Show
+                </button>
+                {!hidden && (
+                    <>
+                        <button className="btn btn-xs hover:bg-info" onClick={() => setValue_(generatePassword())}>
+                            Generate
+                        </button>
+                        <button className="btn btn-xs hover:bg-primary" onClick={() => {
+                            setHidden(true);
+                            onSave?.(value_);
+                        }}>
+                            Save
+                        </button>
+                    </>
+                )}
+                <button
+                    className="btn btn-xs hover:font-bold hover:bg-error-content hover:text-black"
+                    onClick={async () => {
+                        const remove = confirm(`Are you sure you want to delete password for ${item.name}?`);
+
+                        if (!remove) return;
+
+                        setDeleting(true);
+
+                        const res = await fetch(`/dashboard/passwords/remove/${item.id}`, { method: 'DELETE' });
+
+                        if (res.status === 200) {
+                            setDeleting(false);
+                            removeItem(item);
+                        }
+                    }}
+                >
+                    {
+                        deleting ? (
+                            <span className="loading loading-xs loading-spinner"></span>
+                        ) : 'Remove'
+                    }
+                </button>
+            </td>
+        </>
     );
 }
 
@@ -88,7 +94,7 @@ export default function PasswordTable({ items }: { items?: Password[] }) {
             <div className="italic ml-4">
                 {visibleItems && visibleItems?.length > 0 && `${visibleItems.length} total passwords`}
             </div>
-            <table className="table w-full">
+            <table className="table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -103,15 +109,12 @@ export default function PasswordTable({ items }: { items?: Password[] }) {
                             <tr key={item.id}>
                                 <td className="w-3/12">{item.name}</td>
                                 <td className="w-3/12">{item.username}</td>
-                                <PasswordColumn
-                                    value={item.password}
-                                    onChange={(v) => updatePassword({
-                                        ...item,
-                                        password: v
-                                    })}
-                                />
-                                <Operations
+                                <PasswordActionColumns
                                     item={item}
+                                    onSave={(password) => updatePassword({
+                                        ...item,
+                                        password
+                                    })}
                                     removeItem={(item) => {
                                         setVisibleItems(visibleItems.filter(item_ => item_.id !== item.id));
                                     }}
