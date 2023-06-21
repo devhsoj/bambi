@@ -35,7 +35,7 @@ export default function NewPassword() {
             <div className="menu menu-horizontal m-0">
                 <Link to="../passwords">
                     <button className="btn-xs btn-accent mr-4">
-                        Back to List
+                        {'<'} Back to List
                     </button>
                 </Link>
             </div>

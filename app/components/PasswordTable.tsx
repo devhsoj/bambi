@@ -59,9 +59,9 @@ function PasswordActionColumns({ item, onSave, removeItem }: {
                     </>
                 )}
                 <button
-                    className="btn btn-xs hover:font-bold hover:bg-error-content hover:text-black"
+                    className="btn btn-xs hover:font-bold hover:bg-error-content"
                     onClick={async () => {
-                        const remove = confirm(`Are you sure you want to delete password for ${item.name}?`);
+                        const remove = confirm(`Are you sure you want to delete the password for ${item.name}?`);
 
                         if (!remove) return;
 
@@ -88,11 +88,22 @@ function PasswordActionColumns({ item, onSave, removeItem }: {
 
 export default function PasswordTable({ items }: { items?: Password[] }) {
     const [ visibleItems, setVisibleItems ] = useState(items);
+    const [ searching, setSearching ] = useState(false);
 
     return (
         <div className="overflow-x-scroll">
-            <div className="italic ml-4">
-                {visibleItems && visibleItems?.length > 0 && `${visibleItems.length} total passwords`}
+            <div className="italic ml-4 mt-4">
+                <input
+                    className="bg-inherit rounded-none mr-2 border border-base-200 active:border-primary-focus p-1"
+                    placeholder="Search"
+                    onChange={(e) => {
+                        const search = e.target.value;
+
+                        setVisibleItems(items?.filter((item) => item.name.includes(search) || item.username.includes(search)));
+                        setSearching(e.target.value.length > 0);
+                    }}
+                />
+                <span>{items && items?.length > 0 && `${items.length} total passwords ${searching ? `(${visibleItems?.length ?? 0} passwords filtered)` : ''}`}</span>
             </div>
             <table className="table">
                 <thead>

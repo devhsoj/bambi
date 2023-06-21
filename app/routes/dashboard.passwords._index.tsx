@@ -24,11 +24,11 @@ export default function Passwords() {
             <div className="divider mb-0"></div>
             <div className="menu menu-horizontal m-0">
                 <Link to="new">
-                    <button className="btn-xs btn-primary mr-4">
+                    <button className="btn btn-xs hover:bg-primary mr-2">
                         New Password
                     </button>
                 </Link>
-                <button className="btn-xs btn-error mr-4" onClick={async () => {
+                <button className="btn btn-xs mr-2 hover:bg-error-content" onClick={async () => {
                     setRemovingAll(true);
 
                     const res = await fetch('/dashboard/passwords/remove', { method: 'DELETE' });
