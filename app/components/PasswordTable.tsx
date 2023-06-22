@@ -102,7 +102,11 @@ export default function PasswordTable({ items }: { items?: Password[] }) {
                                 onChange={(e) => {
                                     const search = e.target.value;
 
-                                    setVisibleItems(items?.filter((item) => item.name.includes(search) || item.username.includes(search)));
+                                    setVisibleItems(items?.filter((item) => {
+                                        return item.name.toLowerCase().includes(search)
+                                            || item.username.toLowerCase().includes(search);
+                                    }));
+
                                     setSearching(e.target.value.length > 0);
                                 }}
                             />

@@ -1,3 +1,4 @@
+import BitwardenImport from '@/components/BitwardenImport';
 import PasswordTable from '@/components/PasswordTable';
 import { getSession } from '@/lib/session.server';
 import { list } from '@/lib/user/password.server';
@@ -24,10 +25,11 @@ export default function Passwords() {
             <div className="divider mb-0"></div>
             <div className="menu menu-horizontal m-0">
                 <Link to="new">
-                    <button className="btn btn-xs hover:bg-primary mr-2">
+                    <button className="btn btn-xs hover:bg-primary hover:text-black mr-2">
                         New Password
                     </button>
                 </Link>
+                <BitwardenImport />
                 <button className="btn btn-xs mr-2 hover:bg-error-content" onClick={async () => {
                     setRemovingAll(true);
 
