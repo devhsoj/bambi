@@ -61,7 +61,7 @@ function PasswordActionColumns({ item, onSave, removeItem }: {
                 <button
                     className="btn btn-xs hover:font-bold hover:bg-error-content"
                     onClick={async () => {
-                        const remove = confirm(`Are you sure you want to delete the password for ${item.name}?`);
+                        const remove = confirm(`Are you sure you want to remove password '${item.name}'?`);
 
                         if (!remove) return;
 

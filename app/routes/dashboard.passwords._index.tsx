@@ -32,7 +32,7 @@ export default function Passwords() {
                 <BitwardenImport />
                 <button className="btn btn-xs mr-2 hover:bg-error-content" onClick={async () => {
 
-                    const remove = confirm('Are you sure you want to delete all your passwords?');
+                    const remove = confirm('Are you sure you want to remove all your passwords?');
 
                     if (!remove) return;
 
