@@ -31,15 +31,18 @@ export default function Passwords() {
                 </Link>
                 <BitwardenImport />
                 <button className="btn btn-xs mr-2 hover:bg-error-content" onClick={async () => {
+
+                    const remove = confirm('Are you sure you want to delete all your passwords?');
+
+                    if (!remove) return;
+
                     setRemovingAll(true);
 
                     const res = await fetch('/dashboard/passwords/remove', { method: 'DELETE' });
 
                     if (res.status === 200) {
-                        setTimeout(() => {
-                            setRemovingAll(false);
-                            window.location.reload();
-                        }, 1_000);
+                        setRemovingAll(false);
+                        window.location.reload();
                     }
                 }}>
                     {removingAll ? <span className="loading loading-xs loading-spinner"></span> : 'Remove All'}
